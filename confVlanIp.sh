@@ -47,7 +47,7 @@ GREP="$(/usr/bin/which grep)"
 ECHO="$(/usr/bin/which echo)"
 
 # Vlan definition
-A_VLANS=($(${SEQ} 1100 1 1112))
+A_VLANS=($(${SEQ} 1100 1 1150))
 
 # Interface and IP addresses used
 INT='eth0'
@@ -77,21 +77,21 @@ else
         # Check if one of the vlans (with same name or vlan id) is already configured
         for vlan in ${A_VLANS[@]}
         do
-                CHECK_INT_VLAN="$(${IP} link show ${INT}.vlan${vlan} 2>&1 | ${GREP} -c 'does not exist')"
+            CHECK_INT_VLAN="$(${IP} link show ${INT}.vlan${vlan} 2>&1 | ${GREP} -c 'does not exist')"
 
-                if [[ ${CHECK_INT_VLAN} == 1 ]]; then
-	                CHECK_INT_VLAN_ID="$(${IP} -d link | ${GREP} -c "vlan protocol 802.1Q id ${vlan}")"
+	        if [[ ${CHECK_INT_VLAN} == 1 ]]; then
+	            CHECK_INT_VLAN_ID="$(${IP} -d link | ${GREP} -c "vlan protocol 802.1Q id ${vlan}")"
 
-					if [[ ${CHECK_INT_VLAN_ID} == 0 ]]; then
-		                continue
-					else
-		                ${ECHO} "Failure: Vlan id seems to be configured somewhere already ... exiting"
-						exit 1
-					fi
-                else
-                    ${ECHO} "Failure: Vlan interface with this name is already existent ... exiting"
+				if [[ ${CHECK_INT_VLAN_ID} == 0 ]]; then
+	                continue
+				else
+	                ${ECHO} "Failure: Vlan id seems to be configured somewhere already ... exiting"
 					exit 1
-                fi
+				fi
+	        else
+	            ${ECHO} "Failure: Vlan interface with this name is already existent ... exiting"
+		    exit 1
+	        fi
         done
 
 		# Try and error for each vlan, if gateway can be pinged successfully, use it
@@ -109,7 +109,7 @@ else
 				break
 			else
 				${ECHO} "Failure: Gateway is not reachable, seems to be the wrong vlan ..."
-          		${IP} r d ${INT_VLAN_ROUTE} via ${INT_VLAN_GW} dev ${INT}.vlan${vlan}
+           		${IP} r d ${INT_VLAN_ROUTE} via ${INT_VLAN_GW} dev ${INT}.vlan${vlan}
                 ${IP} link del ${INT}.vlan${vlan}
 			fi
 		done
