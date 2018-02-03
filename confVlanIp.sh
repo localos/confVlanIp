@@ -23,7 +23,7 @@
 # Try and error vlan config tool
 #
 # Author: solacol
-# Version: 0.5
+# Version: 1.0
 #
 #####################################################
 #
